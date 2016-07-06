@@ -28,23 +28,9 @@ var marvel = marvelFactory({
   version: '1'
 });
 
-// 1. Sign up for the marvel api: https://developer.marvel.com  </DONE>
-// 2. Get your public and private key from: https://developer.marvel.com/account  </DONE>
-// 3. Replace the above config with your own public and private key </DONE>
-// 4. On the account page, a new allowed referer: localhost </DONE>
-// 5. Make sure you hit update! </DONE>
-// 6. Fork jimthedev/promises on github  </DONE>
-// 7. Clone <<yourusername>>/promises from github to your computer </DONE>
-// 8. cd in your promises folder and run `npm install`. </DONE>
-// 9. Modify marvel.js to add the name of the character as well. </DONE>
-// 10.You can run a server with: `./node_modules/.bin/http-server`  </DONE>
-// 11.Once the server is running, you can see the code at:  </DONE>
-//       http://localhost:8080/marvel.html
-//
 
-// Make a call using the api
 marvel('/characters').then(function(json) { 
-  json.data.results.map(function(character){
+  var finalCount = json.data.results.reduce(function(accumulator, character){
     
     var characterContainer = document.createElement('character');
     var imgPath = character.thumbnail.path + '.' + character.thumbnail.extension;
@@ -70,9 +56,28 @@ marvel('/characters').then(function(json) {
 
     var container = document.querySelector('characters');
     container.appendChild(characterContainer);
+    console.log('------------');
+    console.log('accumulator:', accumulator);
+    console.log('character:', character);
 
+    var wasImgFound = (imgPath !== 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg')
+    console.log('was found:', wasImgFound)
+    var newCount = accumulator.count; //start with new count = to old count
+      if (typeof accumulator.count === 'undefined' && wasImgFound){
+        newCount = 0;
+      } else if (typeof accumulator.count === 'undefined' && !wasImgFound) {
+        newCount = 1
+      } else if (typeof accumulator.count !== 'undefined' && !wasImgFound) {
+        newCount++;
+      }
+      var characterWithCount = character;
+        characterWithCount.count = newCount;
+         return characterWithCount;
   }); 
+  console.log(finalCount.count);
 });
 
+
+//http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg
 
 
